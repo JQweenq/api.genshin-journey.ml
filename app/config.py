@@ -7,7 +7,21 @@ class Config:
     __abstract__ = True
 
     SQLALCHEMY_ECHO: bool = False
-    SQLALCHEMY_DATABASE_URI: str = f'sqlite:///{os.path.join(basedir, "database.db")}'
+
+    @property
+    def SQLALCHEMY_DATABASE_URI() -> str:
+        uri = os.getenv("HEROKU_DATABASE_URL", None)
+
+        if uri is None:
+            print("THIS APP USED LOCAL DB")
+
+            return f'sqlite:///{os.path.join(basedir, "database.db")}'
+
+        elif uri.startswith("postgres") and not uri.startswith("postgresql"):
+            return f"postgresql{uri[7:]}"
+
+        return uri
+
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     ENV: str
     DEBUG: bool
@@ -62,7 +76,6 @@ class Test(Config):
 
 class Prod(Config):
     """UNIX OS"""
-    SQLALCHEMY_DATABASE_URI = os.getenv('DATABASE_URL', f'sqlite:///{os.path.join(basedir, "database.db")}')
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', 'admin')
     SECRET_KEY = os.getenv('SECRET_KEY', 'admin')
 
