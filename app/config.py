@@ -6,11 +6,13 @@ def get_database_uri():
     uri = os.getenv("HEROKU_DATABASE_URL", None)
 
     if uri is None:
-        print("THIS APP USED LOCAL DB")
+        print("THIS APP USE LOCAL DB")
 
         return f'sqlite:///{os.path.join(basedir, "database.db")}'
     elif uri.startswith("postgres") and not uri.startswith("postgresql"):
-        return f"postgresql{uri[7:]}"
+        print("THIS APP USE POSTGRESQL DB")
+
+        return f"postgresql{uri[8:]}"
 
     return uri
 
