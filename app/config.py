@@ -2,26 +2,24 @@ import os
 
 basedir = os.getcwd()
 
+def get_database_uri():
+    uri = os.getenv("HEROKU_DATABASE_URL", None)
+
+    if uri is None:
+        print("THIS APP USED LOCAL DB")
+
+        return f'sqlite:///{os.path.join(basedir, "database.db")}'
+    elif uri.startswith("postgres") and not uri.startswith("postgresql"):
+        return f"postgresql{uri[7:]}"
+
+    return uri
+
 
 class Config:
     __abstract__ = True
 
     SQLALCHEMY_ECHO: bool = False
-
-    @property
-    def SQLALCHEMY_DATABASE_URI() -> str:
-        uri = os.getenv("HEROKU_DATABASE_URL", None)
-
-        if uri is None:
-            print("THIS APP USED LOCAL DB")
-
-            return f'sqlite:///{os.path.join(basedir, "database.db")}'
-
-        elif uri.startswith("postgres") and not uri.startswith("postgresql"):
-            return f"postgresql{uri[7:]}"
-
-        return uri
-
+    SQLALCHEMY_DATABASE_URI: str = get_database_uri()
     SQLALCHEMY_TRACK_MODIFICATIONS: bool = False
     ENV: str
     DEBUG: bool
