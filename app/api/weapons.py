@@ -1,33 +1,43 @@
-from flask_restful import Resource
-from flask import request
+from flask import Blueprint, request
+
 from app.models.weapon import Weapon
 from app.data_models.weapon import WeaponData
 from app.api.base import BaseResource
-from app.utils.datas import *
+from app.utils.datas import (
+    GET,
+    POST,
+    DELETE,
+    PATCH
+)
+
+__all__ = ["route"]
+
+route = Blueprint("weapons", __name__, url_prefix="weapons")
 
 
-class WeaponsRoute(Resource):
+@route.get("/")
+def get():
+    args: GET = request.parse()
 
-    @staticmethod
-    def get() -> (dict, int):
-        args: GET = request.parse()
+    return BaseResource.get(Weapon, args)
 
-        return BaseResource.get(Weapon, args)
 
-    @staticmethod
-    def post() -> (dict, int):
-        args: POST = request.parse(['title', 'title_en'])
+@route.post("/")
+def post():
+    args: POST = request.parse(["title", "title_en"])
 
-        return BaseResource.post(Weapon, WeaponData, args)
+    return BaseResource.post(Weapon, args)
 
-    @staticmethod
-    def delete():
-        args: DELETE = request.parse(['id'])
 
-        return BaseResource.delete(Weapon, args)
+@route.delete("/")
+def delete():
+    args: DELETE = request.parse(["id"])
 
-    @staticmethod
-    def patch():
-        args: PATCH = request.parse(['id', 'attr', 'value'])
+    return BaseResource.delete(Weapon, args)
 
-        return BaseResource.patch(Weapon, WeaponData, args)
+
+@route.patch("/")
+def patch():
+    args: PATCH = request.parse(["id", "attr", "value"])
+
+    return BaseResource.patch(Weapon, WeaponData, args)
