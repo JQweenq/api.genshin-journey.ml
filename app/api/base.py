@@ -1,4 +1,4 @@
-from flask import abort, Response
+from flask import abort, Response, jsonify
 from sqlalchemy.exc import IntegrityError
 
 from app.models.utils import CRUD
@@ -20,11 +20,11 @@ class BaseResource:
             response = obj.get_all_entities(obj)
 
         if isinstance(response, list) and len(response) != 0:
-            return [item.as_dict(args.ignore, args.only) for item in response]
+            return jsonify([item.as_dict(args.ignore, args.only) for item in response])
         elif isinstance(response, list) and len(response) == 0:
             return abort(404)
-        elif response:
-            return response.as_dict(args.ignore, args.only)
+        elif response is not None:
+            return jsonify(response.as_dict(args.ignore, args.only))
         else:
             return abort(404)
 
