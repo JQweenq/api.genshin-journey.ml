@@ -1,3 +1,4 @@
+.vscode
+.idea
+readme.md
 app/tests/
-pyrightconfig.json
-
